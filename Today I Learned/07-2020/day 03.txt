@@ -10,3 +10,15 @@ And damn, some things are annoying.
 I can't set up the ssh authentication on github for shit.
 I've followed the steps on the tutorial a few times,
 but no luck. Well, a problem for tomorrow.
+
+A good reminder:
+https://www.techbeamers.com/python-keywords-identifiers-variables/
+Best Practices for Identifier Naming.
+
+    Better have class names starting with a capital letter. All other identifiers should begin with a lowercase letter.
+    Declare private identifiers by using the (‘_’) underscore as their first letter.
+    Don’t use ‘_’ as the leading and trailing character in an identifier. As Python built-in types already use this notation.
+    Avoid using names with only one character. Instead, make meaningful names.
+        For example – While i = 1 is valid, but writing iter = 1 or index = 1 would make more sense.
+    You can use underscore to combine multiple words to form a sensible name.
+        For example – count_no_of_letters.
