@@ -1,0 +1,17 @@
+It's been a while. I started my studies with compiled/interpreted languages. 
+The overview of compiled languages isn't new for me, I still remember some things from
+the Electronic Engineering undergrad I didn't finish.
+I've worked designing basic ALUs and simulating them,
+with some CISC assembly (I think it was on a 8051 processor...)
+And with C. I don't know how a compiler is written.
+
+Now, the concept of interpreted langues is new for me.
+It's quite interesting to know that's how Python works.
+
+What really stood out, though, was the byte compiling, or 
+JIT compiling. That's intriguing! Certainly what I'll do next.
+
+For now, I'll do some basic arithmetics coding, 
+then a few operation with strings, just to get things started.
+
+That's it for today!
