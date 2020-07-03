@@ -1,0 +1,12 @@
+Installed a VM, Ubuntu 16.04 (I don't want problems with my OS,
+I need a stable version), Python 3.7.2, only to then discover
+it was installed by default. LOL. Intalled Zsh terminal, 
+and then Oh My Zsh, and what can I say? I like pretty things.
+Also, user experience, right?
+Installed Sublime Text 3, too.
+
+Now I'm starting to remember how to use the terminal!
+And damn, some things are annoying. 
+I can't set up the ssh authentication on github for shit.
+I've followed the steps on the tutorial a few times,
+but no luck. Well, a problem for tomorrow.
