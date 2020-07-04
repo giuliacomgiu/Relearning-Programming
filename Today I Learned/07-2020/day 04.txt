@@ -1,0 +1,19 @@
+Did some exercises on python strings, lists and tuples.
+Now, lists give me chills... so many un-typecasted objects
+on a lists, and lists nested on lists...
+Fun thing to learn that lists' methods modify the original list.
+You don't have to do:
+list = list.insert()
+
+Tuples are immutable and lists are mutable,
+because tuples are a fixed size, and lists
+are dynamic. Dynamic memory allocation in C
+was a bit of a pain... Now, when I finish studying 
+JITs, I'll maybe check this out!
+
+But then again, this is very specific to python, 
+maybe I should learn something more generic.
+
+That's it for today!!
+
+File: data-types.py
