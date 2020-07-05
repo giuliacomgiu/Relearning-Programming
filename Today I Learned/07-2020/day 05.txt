@@ -1,0 +1,13 @@
+Today I took a closer look at lists and tuples.
+<files lists.py and tuples.py>
+I was following an online course, but turns out
+the python documentation is phenomenal! 
+Why didn't I start out with it, I hear you cry.
+Well. Not sure. Found the previous guide on python's 
+webpage.
+
+Some of the things I did today:
+https://docs.python.org/3/tutorial/datastructures.html
+https://docs.python.org/3/library/stdtypes.html#typesseq
+
+I focused on what seemed trickier.
