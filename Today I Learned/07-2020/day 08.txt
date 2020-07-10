@@ -1,0 +1,8 @@
+Refined the dicio-de-rima.py.
+Now created functions, processed that 
+weird ass text that inserts '\x00' 
+in front of every frecking character!
+VICTORY!
+Tomorrow I'll write a log
+and I'll create a set with all words.
+see dicio-de-rimas-v2
