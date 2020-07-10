@@ -1,0 +1,9 @@
+My, my... Again, a day late.
+Found a database with portuguese word
+(https://www.corpusdata.org/formats.asp)
+And wrote a code to open it, remove unnecessary
+data, and save the result in a new file.
+See "dicio-de-rimas.py".
+Also watched some videos from 
+youtube.com/user/SocraticaStudios
+Absolutely fantastic.
