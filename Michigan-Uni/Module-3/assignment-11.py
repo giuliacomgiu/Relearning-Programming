@@ -8,7 +8,6 @@ file = "regex_sum_42.txt"
 with open(file) as full_text:
 	numbers = re.findall('[0-9]+',full_text.read())
 
-print(numbers)
 sum = 0
 for item in numbers:
 	sum += int(item)
