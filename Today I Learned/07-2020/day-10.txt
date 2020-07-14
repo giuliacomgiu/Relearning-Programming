@@ -1,0 +1,13 @@
+I'm a little late on the reports,
+this is a the-day-before-yesterday I learned.
+I actually finished the first two modules of
+Michigan Uni's Python For Everyone courses.
+They expected you to take 7 weeks to finish 
+each one of them. They're very introductory,
+but now that I'm learning new stuff, I find the
+lessons to be very valuable. It's introducing me
+to new resources, such as regex, which I LOVED
+(quite a usefull thing, isn't it?) and BeautifulSoup.
+I've made my first code that searches the browser!
+Yay!! I'm stocked. Anyway, uploading all recent
+assignments to relearning-programming/michigan-uni
