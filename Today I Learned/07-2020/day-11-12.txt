@@ -1,0 +1,9 @@
+I finished the third Michigan Uni course!
+I learned some XML and JSON, which I used
+to extract data from a google API.
+For mor info, se assignment 13 on 
+relearning-programing/michigan-uni/module-3
+Tomorrow I'll start module 4 because I have
+a time limit. When I can no longer get certificates
+from coursera, I'll come back and revisit what
+I find necessary for a more in-depth study.
