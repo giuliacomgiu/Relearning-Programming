@@ -1,0 +1,9 @@
+Today I started the fourth Michigan Uni 
+Python For Everyone module. It's Data Structures
+for Python. I installed SQLite, created a database
+inserted some data, updated it through the SQLite
+browser, and later on did all of the above
+on a python script <3
+
+After this is done. I'll study the theory
+more: relations, tuples and attributes.
