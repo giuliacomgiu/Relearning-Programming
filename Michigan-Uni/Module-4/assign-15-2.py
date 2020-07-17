@@ -26,7 +26,7 @@ print('Connected to db')
 cur.execute('DROP TABLE IF EXISTS Counts')
 
 cur.execute('''
-CREATE TABLE Counts (email TEXT, count INTEGER)''')
+CREATE TABLE Counts (org TEXT, count INTEGER)''')
 
 # Reading and storing data
 for line in data:
@@ -35,24 +35,23 @@ for line in data:
 
     # Processing received messages
     pieces = line.split()
-    email = pieces[1]
-    cur.execute('SELECT count FROM Counts WHERE email = ? ', (email,))
+    email = pieces[1].split('@')
+    org = email[1]
+    cur.execute('SELECT count FROM Counts WHERE org = ? ', (org,))
     row = cur.fetchone()
     if row is None:
-        cur.execute('''INSERT INTO Counts (email, count)
-                VALUES (?, 1)''', (email,))
+        cur.execute('''INSERT INTO Counts (org, count)
+                VALUES (?, 1)''', (org,))
     else:
-        cur.execute('UPDATE Counts SET count = count + 1 WHERE email = ?',
-                    (email,))
+        cur.execute('UPDATE Counts SET count = count + 1 WHERE org = ?',
+                    (org,))
     conn.commit()
 
-# Finding most received emails
+# Finding most received orgs
 # https://www.sqlite.org/lang_select.html
-sqlstr = 'SELECT email, count FROM Counts ORDER BY count DESC LIMIT 10'
-count_ = []
+sqlstr = 'SELECT org, count FROM Counts ORDER BY count DESC LIMIT 10'
+
 for row in cur.execute(sqlstr):
     print(str(row[0]), row[1])
-    count_.append(row[1])
 
-print(sum(count_))
 cur.close()
