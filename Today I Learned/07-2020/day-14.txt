@@ -1,0 +1,8 @@
+Yesterday I learned some basic SQL commands,
+CREATE TABLE, INSERT INTO, DROP, UPDATE.
+Today I learned more about data models and
+relational SQL: inserting relational data,
+reconstructing data with the join command.
+Now working on assign-15-7.py:
+Reads xml data from iTunes website and
+builds a database with them.
