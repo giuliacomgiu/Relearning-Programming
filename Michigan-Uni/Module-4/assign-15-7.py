@@ -33,27 +33,40 @@ CREATE TABLE Track (
 );
 ''')
 
-
+# Opening and parsing xml file
 fname = input('Enter file name: ')
-if ( len(fname) < 1 ) : fname = '/home/giuliacomgiu/Documents/Relearning-Programming/michigan-uni/tracks/Library.xml'
+path = '/home/giuliacomgiu/Documents/Relearning-Programming/michigan-uni/tracks/'
+if ( len(fname) < 1 ) : fname = path+'Library.xml'
+stuff = ET.parse(fname)
 
-# <key>Track ID</key><integer>369</integer>
+# Defining function to find data. XML example:
 # <key>Name</key><string>Another One Bites The Dust</string>
-# <key>Artist</key><string>Queen</string>
+# i.key,i.text => key Name
+# i.key,i.text => string Another One Bites ...
 def lookup(d, key):
-    found = False
+    content_next = False
     for child in d:
-        if found : return child.text
+
+        # This runs 1 iter after
+        # Correct header (content) and exits function.
+        # No need to reset content_next 
+        if content_next : return child.text
+        
+        #This runs only if correct header
         if child.tag == 'key' and child.text == key :
-            found = True
+            content_next = True
+
     return None
 
-stuff = ET.parse(fname)
+
+# Reading XML
 all_ = stuff.findall('dict/dict/dict')
 print('Dict count:', len(all_))
 for entry in all_:
+
     if ( lookup(entry, 'Track ID') is None ) : continue
 
+    # If a Trck id was found, lookup contents
     name = lookup(entry, 'Name')
     artist = lookup(entry, 'Artist')
     album = lookup(entry, 'Album')
@@ -61,11 +74,13 @@ for entry in all_:
     rating = lookup(entry, 'Rating')
     length = lookup(entry, 'Total Time')
 
+    # If an information is missing, skip track
     if name is None or artist is None or album is None : 
         continue
 
     print(name, artist, album, count, rating, length)
 
+    # Insert into database
     cur.execute('''INSERT OR IGNORE INTO Artist (name) 
         VALUES ( ? )''', ( artist, ) )
     cur.execute('SELECT id FROM Artist WHERE name = ? ', (artist, ))
