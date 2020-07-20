@@ -20,7 +20,7 @@ CREATE TABLE Artist (
 );
 
 CREATE TABLE Genre (
-    id  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+    ID  INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
     name    TEXT UNIQUE
 );
 
@@ -102,7 +102,7 @@ for entry in all_:
 
     cur.execute('''INSERT OR IGNORE INTO Genre (name) 
         VALUES ( ? )''', ( genre, ) )
-    cur.execute('SELECT id FROM Genre WHERE name = ? ', (genre, ))
+    cur.execute('SELECT ID FROM Genre WHERE name = ? ', (genre, ))
     genre_id = cur.fetchone()[0]
 
     cur.execute('''INSERT OR REPLACE INTO Track
