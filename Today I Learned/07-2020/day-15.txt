@@ -1,0 +1,8 @@
+Many to Many data models.
+Also did a simple exercise creating a db
+for Courses and Users, connecting them
+through a membership table, that way,
+One user can be in several courses
+and one course has several users. See 
+/relearning-programming/michigan-uni/module-4/
+assign-15-8.py and rosterdb.sqlite.
