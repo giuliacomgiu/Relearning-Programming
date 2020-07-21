@@ -26,7 +26,8 @@ CREATE TABLE Course(
 CREATE TABLE Member(
 	role INTEGER NOT NULL,
 	user_id INTEGER,
-	course_id INTEGER
+	course_id INTEGER,
+	PRIMARY KEY(user_id,course_id)
 );
 	''')
 
