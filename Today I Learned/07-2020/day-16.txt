@@ -1,0 +1,19 @@
+Finished the last assignment  from
+Michiga University's Fourth module.
+(relearning-programming/michigan-uni/module-4/assign-16-2/)
+We didn't write the code ourselves,
+but the goal was to read location data 
+from a list (where.data), insert a new item
+and display all of them on a map
+through Google Maps API.
+
+The first script (geoloads.py)
+reads the locations on where.data
+retrieves the geocoded response and
+stores it in a database (geodata.sqlite).
+
+Then, geodump.py reads the database mentioned
+above and creates a JSON (where.js) file.
+
+Last, but not least, an html file
+creates a view of the map with where.js!
