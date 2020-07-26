@@ -14,7 +14,28 @@ if url_p.scheme == None or url_p.netloc == None:
 	quit()
 print('Default:',url)'''
 
-def find_links():
+def saveFile(content,fname=''):
+	success = False
+	f = input('Enter a valid file name or enter for default:')
+	if len(f) > 1: fname = f
+	print('Saving to file',fname)
+	
+	try:
+		content = str(content)
+		success = True
+	except:
+		print(type(content), 'cant be converted to string. Cant save')
+
+	if success == True:	
+		try:
+			with open(fname,'w') as f:
+				print(content,file=f)
+		except:
+			print('Couldn\'t open or write file.')
+			success = False
+	return
+
+def findLinks():
 	print('GETTING LAST STATEMENTS\' URLS FROM')
 
 	# Checking robots.txt file
@@ -59,11 +80,8 @@ def find_links():
 	# Parsing
 	u_soup = BeautifulSoup(u_raw, 'html.parser')
 
-	file = input('Would you like to save to a file? (y/n):')
-	if file.lower() == 'y':
-		fname = input('Enter file name')
-		with open(fname,'w') as f:
-			print(u_soup.prettify(),file=f)
+	f = input('Would you like to save to a file? (y/n)')
+	if f.lower == 'y': saveFile(u_soup.prettify(),'raw_html')
 
 	# Paths for last statement and offender info
 	u_lwords = []
@@ -80,28 +98,54 @@ def find_links():
 		i = u_lwords.index(link)
 		new_parse = url_p._replace(path=path,params='',query='',fragment='')
 		u_lwords[i] = urlunparse(new_parse)
+	s = input('Would you like to save last words urls in a file? (y/n)')
+	if(s.lower() == 'y'): saveFile(u_lwords,'url_last_words')
 
 	for link in u_info: 
 		path = '/death_row/'+link['href']
 		i = u_info.index(link)
 		new_parse = url_p._replace(path=path,params='',query='',fragment='')
 		u_info[i] = urlunparse(new_parse)
+	s = input('Would you like to save info urls in a file? (y/n)')
+	if(s.lower() == 'y'): saveFile(u_info,'url_info')
 
 	return u_lwords,u_info
 
+def nameParser(name):
+	name = str(name)
+	name = name.strip(' </p>').split('#')[0].strip()
+	name = name.rstrip(' 	,TDCJ-')
+	
+	#Correcting 'Garza, Jr, Manuel'
+	if ',' in name:
+		full_name = name.split(',')
+		if len(full_name) > 2: print('Check',name)
+		name = full_name.pop(-1).strip()+' '
+		for word in full_name:
+			name += word.strip() + ' '
+		name = name.strip()
+	return name
+
+def infoFinder(info,html_ref):
+	while info not in html_ref:
+		html_ref = html_ref.next_element
+	result = str(html_ref.next_element.next_element.next_element.string)
+	return result
+
 def crawler(lwords,info):
 	db = input('Enter new db name or enter for default:')
-	'''if len(db) < 1: db = 'last-words'
+	if len(db) < 1: db = 'last-words'
 	conn = sqlite3.connect(db+'.sqlite')
 	cur = conn.cursor()
-'''
-	"""cur.execute('''CREATE TABLE IF NOT EXISTS Inmate(
-		name TEXT,
+
+	cur.execute('''CREATE TABLE IF NOT EXISTS Inmate(
+		name TEXT UNIQUE,
 		age INTEGER,
 		last_words TEXT,
 		education_id INTEGER,
 		race_id INTEGER, 
-		gender_id INTEGER)''')
+		gender_id INTEGER
+		error INTEGER)''')
 
 	cur.execute('''CREATE TABLE IF NOT EXISTS Education(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -117,38 +161,90 @@ def crawler(lwords,info):
 
 	cur.execute('''CREATE TABLE IF NOT EXISTS Words(
 		count INTEGER,
-		word TEXT UNIQUE)''')"""
+		word TEXT UNIQUE)''')
 
 	# Ignore SSL certificate errors
 	ctx = ssl.create_default_context()
 	ctx.check_hostname = False
 	ctx.verify_mode = ssl.CERT_NONE
 
-	# Opening link
-	# Loop runs till end even if number of links is diff
-	for i in range(max(len(lwords),len(info))):
+	# Opening and reading last words url link
+	all_lwords = []
+	for url in info:
 		try:
-			with urlopen(lwords[i],context=ctx) as doc:
+			with urlopen(url,context=ctx) as doc:
 				if doc.getcode() != 200:
-					print('Error on page: ',lwords[i],'\n',doc.getcode())
+					print('Error on page: ',url,'\n',doc.getcode())
 					raise ValueError('Couldnt open page')
 
-				if 'html' not in doc.info().get_content_type():
+				if 'text/html' not in doc.info().get_content_type():
 					raise ValueError('Non html page')
-				u_raw = doc.read()
+
+				raw = doc.read()
 		except ValueError as err:
 			print(err)
 			continue
+		except KeyboardInterrupt:
+			break
 		except:
 			print('Couldnt open for reasons unknown')
-			quit()
 
-		print('yay')
-		soup = BeautifulSoup(u_raw,'html.parser')
-		print(soup.find("Last Statement"))
-		input('pause')		
+		# Parsing
+		soup = BeautifulSoup(raw,'html.parser')
+		main = soup.find(id='maincontent')
+
+		name = infoFinder('Name',main)
+		name = nameParser(name)
+		age = infoFinder('Age (',main)
+		race = infoFinder('Race',main)
+		gender = infoFinder('Gender',main)
+		print(name,age,race,gender)
+
+	for url in lwords:
+		try:
+			with urlopen(url,context=ctx) as doc:
+				if doc.getcode() != 200:
+					print('Error on page: ',url,'\n',doc.getcode())
+					raise ValueError('Couldnt open page')
+
+				if 'text/html' not in doc.info().get_content_type():
+					raise ValueError('Non html page')
+
+				raw = doc.read()
+		except ValueError as err:
+			print(err)
+			continue
+		except KeyboardInterrupt:
+			break
+		except:
+			print('Couldnt open for reasons unknown')
+			continue
+
+		# Parsing
+		soup = BeautifulSoup(raw,'html.parser')
+		f = soup.find(id='maincontent')
+		while 'Offender:' not in f:
+			f = f.next_element
+		
+		# Finding name
+		elem = str(f.next_element.next_element.next_element)
+		name = nameParser(elem)
+		print(name)
+
+		# Finding last statement
+		while 'Last Statement:' not in f:
+			f = f.next_element
+		last_words = str(f.next_element.next_element.next_element)
+		last_words = last_words.strip('  	</p>')
+		all_lwords.append(last_words)
+		print(last_words)
+
+		cur.execute('''INSERT INTO Inmate(name, last_words)
+			VALUES (?, ?)''',(name,last_words))
+		conn.commit()
+	conn.close()
 
 
 
-lwords,info = find_links()
+lwords,info = findLinks()
 crawler(lwords,info)
