@@ -1,3 +1,19 @@
+""" Word counter for Texas' executed offenders' last words. 
+
+WRITTEN BY GIULIA CIPRANDI
+or Michigan University's Fifth Python 4 Everyone
+module: Capstone: Retrieving, processing and
+visualizing data, week 3, identifying a data source.
+This script will create a database to store executed
+offenders' information, their last words and a total
+word counter. The main tables from the db are:
+	Inmate(name, last words, age, gender id, race id, education id)
+	Words(word, count).
+
+It also checks the robots.txt file to make sure website
+allows crawling
+"""
+
 import sqlite3
 import ssl
 import urllib.robotparser
@@ -314,8 +330,6 @@ word_count = dict()
 
 # Get all offender urls from texas website
 u_lwords,u_info = findLinks()
-lwords_small = u_lwords[455:]
-info_small = u_info[455:]
 
 # Making sure both lists are the same size
 diff = len(u_lwords) - len(u_info)
@@ -326,12 +340,11 @@ elif diff < 0:
 
 db_name = createDatabase()
 
-# Replace lwords_small w u_lwords
 # Get offender's data and last words,
 # store in database, count words
-for i in range(len(lwords_small)):
+for i in range(len(u_lwords)):
 	
-	last_words = getData(lwords_small[i],info_small[i],db_name)
+	last_words = getData(u_lwords[i],u_info[i],db_name)
 	sentence_count = wordCounter(last_words)
 	
 	if len(sentence_count) > 3:
@@ -340,6 +353,8 @@ for i in range(len(lwords_small)):
 			else: word_count[k] = v
 
 print(word_count)
+
+# Store total word count to database
 conn = sqlite3.connect(db_name)
 cur = conn.cursor()
 for word, count in word_count.items():
