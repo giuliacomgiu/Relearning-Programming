@@ -121,36 +121,36 @@ def findLinks():
 	if f.lower == 'y': saveFile(u_soup.prettify(),'raw_html')
 
 	# Paths for last statement and offender info
-	u_lwords = []
-	u_info = []
+	url_lw = []
+	url_info = []
 	for link in u_soup.find_all('a'):
 		if "Last Statement of" in str(link):
-			u_lwords.append(link)
+			url_lw.append(link)
 		if "Offender Information for" in str(link):
-			u_info.append(link)
+			url_info.append(link)
 
 	# Replacing old list with actual urls
-	for link in u_lwords: 
+	for link in url_lw: 
 		path = '/death_row/'+link['href']
-		i = u_lwords.index(link)
+		i = url_lw.index(link)
 		new_parse = url_p._replace(path=path,params='',query='',fragment='')
-		u_lwords[i] = urlunparse(new_parse)
-		if u_lwords[i] == 'https://www.tdcj.texas.gov/death_row/dr_info/no_last_statement.html':
-			u_lwords[i] = ''
+		url_lw[i] = urlunparse(new_parse)
+		if url_lw[i] == 'https://www.tdcj.texas.gov/death_row/dr_info/no_last_statement.html':
+			url_lw[i] = ''
 	s = input('Would you like to save last words urls in a file? (y/n)')
-	if(s.lower() == 'y'): saveFile(u_lwords,'url_last_words')
+	if(s.lower() == 'y'): saveFile(url_lw,'url_last_words')
 
-	for link in u_info: 
+	for link in url_info: 
 		path = '/death_row/'+link['href']
-		i = u_info.index(link)
+		i = url_info.index(link)
 		new_parse = url_p._replace(path=path,params='',query='',fragment='')
-		u_info[i] = urlunparse(new_parse)
-		if u_info[i] == 'https://www.tdcj.texas.gov/death_row/dr_info/no_info_available.html':
-			u_info[i] = ''
+		url_info[i] = urlunparse(new_parse)
+		if url_info[i] == 'https://www.tdcj.texas.gov/death_row/dr_info/no_info_available.html':
+			url_info[i] = ''
 	s = input('Would you like to save info urls in a file? (y/n)')
-	if(s.lower() == 'y'): saveFile(u_info,'url_info')
+	if(s.lower() == 'y'): saveFile(url_info,'url_info')
 
-	return u_lwords,u_info
+	return url_lw,url_info
 
 def nameParser(name):
 	name = str(name)
@@ -174,30 +174,26 @@ def infoFinder(info,html_ref):
 	# Fixing last words bug but maintaining age/edu integrity
 	if result.isdecimal() == False and len(result) <= 1:
 		result = str(html_ref.next_element.next_element.next_element.next_element.string)
+	if result == '': result = None
 	return result
 
 def wordCounter(sentence):
+	#Counts both words and decimals
+
 	word_count = dict()
 	words = sentence.lower().strip('\'"').split()
 
 	for word in words:
-		word = word.strip(' \t.,"!?-')
+		word = word.strip(' \t.,"!?-<>')
 
 		if word.isalpha() or word.isdecimal():
-			if word in word_count:
-				word_count[word] += 1
-			else:
-				word_count[word] = 1
+			word_count[word] = word_count.get(word,0) +1
 
 		# Considering words with apostrophes (let's)
 		elif "'" in word:
-			parts = word.split("'")
-			for part in parts: 
+			for part in word.split("'"): 
 				if part.isalpha():
-					if word in word_count:
-						word_count[word] += 1
-					else:
-						word_count[word] = 1
+					word_count[word] = word_count.get(word,0) +1
 
 	return word_count
 
@@ -213,20 +209,22 @@ def createDatabase():
 		last_words TEXT,
 		education_id INTEGER,
 		race_id INTEGER, 
-		gender_id INTEGER
-		error INTEGER)''')
+		gender_id INTEGER)''')
 
 	cur.execute('''CREATE TABLE IF NOT EXISTS Education(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		education INTEGER UNIQUE)''')
+		education INTEGER UNIQUE,
+		count INTEGER)''')
 
 	cur.execute('''CREATE TABLE IF NOT EXISTS Race(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		race TEXT UNIQUE)''')
+		race TEXT UNIQUE,
+		count INTEGER)''')
 
 	cur.execute('''CREATE TABLE IF NOT EXISTS Gender(
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		gender TEXT UNIQUE)''')
+		gender TEXT UNIQUE,
+		count INTEGER)''')
 
 	cur.execute('''CREATE TABLE IF NOT EXISTS Words(
 		word TEXT UNIQUE,
@@ -235,14 +233,15 @@ def createDatabase():
 	conn.close()
 	return db+'.sqlite'
 
-def getData(url_lwords,url_info,db_name):
-	conn = sqlite3.connect(db_name)
-	cur = conn.cursor()
-	
+def getData(url_lwords,url_info):
 	# Opening and reading offender info
 	success, raw = openReadHTML(url_info)
 	if success != True: 
 		name = ''
+		age = None
+		edu = None
+		race = None
+		gender = None
 	else:
 		# Parsing
 		soup = BeautifulSoup(raw,'html.parser')
@@ -255,33 +254,6 @@ def getData(url_lwords,url_info,db_name):
 		edu = edu.lower().strip(' abcdefghijklmnopqrstuvwxyv.()')
 		race = infoFinder('Race',main).lower()
 		gender = infoFinder('Gender',main).lower()
-		print(name,age,race,gender)
-
-		# Inserting on db
-		if edu != None:
-			cur.execute('''INSERT OR IGNORE INTO 
-				Education(education) VALUES (?)''',(edu,))
-			cur.execute('''SELECT id FROM Education 
-				WHERE education = ?''',(edu,))
-			edu_id = cur.fetchone()[0]
-
-		if race != None:
-			cur.execute('''INSERT OR IGNORE INTO 
-				Race(race) VALUES (?)''',(race,))
-			cur.execute('SELECT id FROM Race WHERE race = ?',(race,))
-			race_id = cur.fetchone()[0]
-
-		if gender != None:
-			cur.execute('''INSERT OR IGNORE INTO 
-			Gender(gender) VALUES (?)''',(gender,))
-			cur.execute('SELECT id FROM Gender WHERE gender = ?',(gender,))
-			gender_id = cur.fetchone()[0]
-
-		if name != None:
-			cur.execute('''INSERT OR IGNORE INTO 
-			Inmate(name,age,education_id,race_id,gender_id) 
-			VALUES (?, ?, ?, ?, ?)''',(name, age, edu_id, race_id, gender_id))
-			conn.commit()
 
 	# Aquire correspondent name from Offender info 
 	name_i = name
@@ -314,53 +286,110 @@ def getData(url_lwords,url_info,db_name):
 		
 		#print(last_words,end='\n\n')
 
-    	# Inserting on database
-		if name != None and last_words != None:
-			cur.execute('''INSERT OR IGNORE INTO Inmate(name, last_words)
-				VALUES (?, ?)''',(name, last_words))
-			cur.execute('''UPDATE Inmate SET last_words=? WHERE name=?''',
-				(last_words,name))
-			conn.commit()
+	return edu, race, gender, last_words, name, age
 
-	conn.close()
-	return last_words
 
+
+### SCRIPT BEGINS ###
 
 word_count = dict()
+edu_c = dict()
+race_c = dict()
+gen_c = dict()
 
 # Get all offender urls from texas website
-u_lwords,u_info = findLinks()
+url_lw,url_info = findLinks()
 
 # Making sure both lists are the same size
-diff = len(u_lwords) - len(u_info)
-if diff > 0:
-	for i in range(diff): u_info.append('')
-elif diff < 0:
-	for i in range(diff): u_lwords.append('')
+diff = len(url_lw) - len(url_info)
+if diff > 0: 
+	for i in range(diff): url_info.append('')
+elif diff < 0: 
+	for i in range(diff): url_lw.append('')
 
 db_name = createDatabase()
 
-# Get offender's data and last words,
-# store in database, count words
-for i in range(len(u_lwords)):
-	
-	last_words = getData(u_lwords[i],u_info[i],db_name)
-	sentence_count = wordCounter(last_words)
-	
-	if len(sentence_count) > 3:
-		for k,v in sentence_count.items():
-			if k in word_count: word_count[k] += v
-			else: word_count[k] = v
-
-print(word_count)
-
-# Store total word count to database
+# Store offender's data in db and get info,
 conn = sqlite3.connect(db_name)
 cur = conn.cursor()
+
+for i in range(len(url_lw)):
+	
+	# Getting the data and counting
+	edu, race, gen, last_words, name, age = getData(url_lw[i],url_info[i])
+	print(name)
+	if edu != None: edu_c[edu] = edu_c.get(edu,0) + 1
+	if gen != None: gen_c[gen] = gen_c.get(gen,0) + 1
+	if race != None: race_c[race] = race_c.get(race,0) +1
+
+	sentence_count = wordCounter(last_words)
+	if len(sentence_count) > 3:
+		for k,v in sentence_count.items():
+			word_count[k] = word_count.get(k,0) + 1
+	else: last_words = None
+
+	# Updating database
+	if edu != None:
+		cur.execute('''INSERT OR IGNORE INTO 
+			Education(education) VALUES (?)''', (edu,))
+		cur.execute('''SELECT id FROM Education 
+			WHERE education = ?''',(edu,))
+		edu_id = cur.fetchone()[0]
+
+	if race != None:
+		cur.execute('''INSERT OR IGNORE INTO 
+			Race(race) VALUES (?)''', (race,))
+		cur.execute('''SELECT id FROM Race 
+			WHERE race = ?''',(race,))
+		race_id = cur.fetchone()[0]
+
+	if gen != None:
+		cur.execute('''INSERT OR IGNORE INTO 
+			Gender(gender) VALUES (?)''', (gen,))
+		cur.execute('''SELECT id FROM Gender 
+			WHERE gender = ?''',(gen,))
+		gender_id = cur.fetchone()[0]
+
+	if name != None:
+		cur.execute('''INSERT OR IGNORE INTO 
+		Inmate(name,age,education_id,race_id,gender_id) 
+		VALUES (?, ?, ?, ?, ?)''',(name, age, edu_id, race_id, gender_id))
+
+	if last_words != None:
+		cur.execute('''INSERT OR IGNORE INTO Inmate(name, last_words)
+			VALUES (?, ?)''',(name, last_words))
+		cur.execute('''UPDATE Inmate SET last_words=? WHERE name=?''',
+			(last_words,name))
+	
+	if i%20 == 0 : conn.commit()
+conn.commit()
+
+print(edu_c,'\n',gen_c,'\n',race_c)
+print(word_count)
+
+# Store counts to database
+for edu, count in edu_c.items():
+	cur.execute("""UPDATE Education SET count = ?
+	WHERE education = ?""",(count,edu))
+conn.commit()
+
+for gen, count in gen_c.items():
+	cur.execute('''UPDATE Gender SET count = ?
+		WHERE gender = ?''',(count,gen))
+conn.commit()
+
+for race, count in race_c.items():
+	cur.execute('''UPDATE Race SET count = ?
+		WHERE race = ?''',(count,race))
+conn.commit()
+
+i = 0
 for word, count in word_count.items():
 	cur.execute('''INSERT OR IGNORE INTO Words(word,count)
 		VALUES (?, ?)''', (word, count))
 	cur.execute('''UPDATE Words SET count=? 
 		WHERE word=?''', (count, word))
-	conn.commit()
+	i += 1
+	if i%50 == 0: conn.commit()
+conn.commit()
 conn.close()
