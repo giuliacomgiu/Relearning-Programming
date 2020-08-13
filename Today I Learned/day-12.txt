@@ -1,0 +1,43 @@
+I;ve been doing a lot, recently!
+Currently, I'm participating in ROOT Girls,
+focused on Information security.
+A few notes:
+
+Pilares da Seg. da Info:
+- Integridade
+- Disponibilidade
+- Confiabilidade
+
+Tratamento de dados
+- Acessar
+- Armazenar
+- Arquivar
+- Avaliar
+- Classificar
+- Coletar
+- Comunicar
+- Controlar
+- Difundir
+- Distibuir
+- Eliminar
+- Extrair
+- Modificar
+- Processar
+- Produzir
+- Recber
+- Reproduzir
+- Transferir
+- Transmitir
+- Utilizar
+
+Principios:
+- Finalidade
+- Adequa'c~ao
+- Necessidade
+- Livre ACesso
+- Transparencia
+- Seguranca
+- Qualidade dos Dados
+- Preven'c~ao
+- Nao discriminacao
+- Responsabilizacao e prestacao de contas
