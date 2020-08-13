@@ -11,10 +11,10 @@ function solveRect(l,b){
 		} else
 		{
 			console.log("Area of rectangle of dimensions l = "
-			+ l + "and b = " + b + " is " + rectangle.area);
+			+ l + " and b = " + b + " is " + rectangle.area);
 
 			console.log("Perimeter of rectangle of dimensions l = "
-			+ l + "and b = " + b + " is " + rectangle.perimeter);
+			+ l + " and b = " + b + " is " + rectangle.perimeter);
 		}
 	}
 	)
