@@ -1,0 +1,4 @@
+Today I learned on Coursera about Mongoose SCHEMA's!
+The unorganized freedom you have with MongoDB bothered
+me, glad to hear and experiment with this feature
+in order to create safer and more organized applications.
