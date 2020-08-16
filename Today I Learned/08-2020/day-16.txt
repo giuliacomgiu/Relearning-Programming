@@ -1,0 +1,9 @@
+Ah, so I learned some Basic Authentication 
+in HTTP and the basic usage of cookies 
+on Express generated server.
+
+A few days ago I learned about base64
+encoding on ROOT Girls (a series of seminars
+on Security of Information by UFC - Universidade
+Federal do Ceara), and it was nice to see it in
+action.
