@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const Dishes = require('../models/dishes');
 
 //Adjusting to MongoDB + NodeJS updates
 mongoose.set('useNewUrlParser', true);
@@ -8,7 +9,6 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useUnifiedTopology', true);
 mongoose.set('useCreateIndex', true);
 
-const Dishes = require('../models/dishes');
 
 const dishRouter = express.Router();
 
@@ -76,7 +76,7 @@ dishRouter.route('/:dishId')
     .catch((err) => next(err));
 })
 .delete((req, res, next) => {
-    Dishes.findByIdAndRemove(req.params.dishId)
+    Dishes.findByIdAndDelete(req.params.dishId)
     .then((resp) => {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
