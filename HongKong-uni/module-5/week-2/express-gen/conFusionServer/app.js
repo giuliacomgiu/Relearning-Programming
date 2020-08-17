@@ -22,68 +22,35 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 //app.use(cookieParser('!53cr3T!K3y!'));
-app.use(session({
-    name: 'session-id',
-    secret: '12345-67890-09876-54321',
-    saveUninitialized: false,
-    resave: false,
-    store: new FileStore()
-  }));
+
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
 
 function auth (req, res, next) {
     console.log(req.session);
-    var authHeader = req.headers.authorization;
 
-    //If cookie doesnt containg user, prompt for auth
-    if (!req.session.user)
-    {
-        if (!authHeader) 
-        {
-            var err = new Error('You are not authenticated!');
-            res.setHeader('WWW-Authenticate', 'Basic');
-            err.status = 401;
-            next(err);
-            return;
-        } 
-        else 
-        {
-            //Splitting response of form: Basic ENCODED-USER:ENCODED-PASSW
-            var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
-            var user = auth[0];
-            var pass = auth[1];
-
-            if (user == 'admin' && pass == 'password') 
-            {
-                //Creating cookie with basic auth data
-                req.session.user = 'admin';
-                next(); // authorized
-            } else 
-            {
-                var err = new Error('You are not authenticated!');
-                res.setHeader('WWW-Authenticate', 'Basic');            
-                err.status = 401;
-                next(err);
-            }
-        }
-    } else 
-    {
-        if (req.session.user === 'admin') {
-            next();
-        } else 
-        {
-            var err = new Error('You are not authenticated!');
-            err.status = 401;
-            next(err);
-        }
-    }    
+  if(!req.session.user) {
+      var err = new Error('You are not authenticated!');
+      err.status = 403;
+      return next(err);
+  }
+  else {
+    if (req.session.user === 'authenticated') {
+      next();
+    }
+    else {
+      var err = new Error('You are not authenticated!');
+      err.status = 403;
+      return next(err);
+    }
+  }
 }
 
 app.use(auth);
 
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/dishes', dishRouter);
 app.use('/promotions', promoRouter);
 app.use('/leaders', leaderRouter);
