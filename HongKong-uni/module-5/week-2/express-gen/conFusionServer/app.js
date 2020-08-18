@@ -23,6 +23,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 //app.use(cookieParser('!53cr3T!K3y!'));
 
+app.use(session({
+  name: 'session-id',
+  secret: '12345-67890-09876-54321',
+  saveUninitialized: false,
+  resave: false,
+  store: new FileStore()
+}));
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
