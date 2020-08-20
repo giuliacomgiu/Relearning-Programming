@@ -41,3 +41,12 @@ exports.jwtPassport = passport.use(new JwtStrategy(opts,
     }));
 
 exports.verifyUser = passport.authenticate('jwt', {session: false});
+
+function verifyAdmin(auth, next) {
+    console.log(auth);
+    if(auth) { return next() };
+    return next(new Error('Unauthorized'));
+};
+
+exports.verifyAdmin = verifyAdmin;
+

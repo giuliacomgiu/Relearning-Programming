@@ -80,6 +80,7 @@ dishRouter.route('/:dishId')
     .catch((err) => next(err));
 })
 .delete(authenticate.verifyUser, (req, res, next) => {
+    authenticate.verifyAdmin(req.user.admin, next)
     Dishes.findByIdAndDelete(req.params.dishId)
     .then((resp) => {
         res.statusCode = 200;
@@ -87,6 +88,7 @@ dishRouter.route('/:dishId')
         res.json(resp);
     }, (err) => next(err))
     .catch((err) => next(err));
+
 });
 
 //Handling all comments from a dish
