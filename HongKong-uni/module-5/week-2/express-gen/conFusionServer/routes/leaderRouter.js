@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const Leaders = require('../models/leaders');
-var authenticate = require('../authenticate');
+var auth = require('../authenticate');
 
 //Adjusting to MongoDB + NodeJS updates
 mongoose.set('useNewUrlParser', true);
@@ -30,19 +30,19 @@ leaderRouter.route('/')
         (err) => next(err))
     .catch((err) => next(err));
 })
-.post(authenticate.verifyUser, (req, res, next) => {
+.post(auth.verifyUser, auth.verifyAdmin, (req, res, next) => {
     Leaders.create(req.body)
     .then (
         (leader) => res.json(leader), 
         (err) => next(err))
     .catch((err) => next(err));
 })
-.put(authenticate.verifyUser, (req, res, next) => {
+.put(auth.verifyUser, auth.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.setHeader('Content-Type','text/plain');
     res.end('PUT operation not supported on /leadertions');
 })
-.delete(authenticate.verifyUser, (req, res, next) => {
+.delete(auth.verifyUser, auth.verifyAdmin, (req, res, next) => {
     Leaders.deleteMany({})
     .then(
         (resp) => res.json(resp), 
@@ -65,12 +65,12 @@ leaderRouter.route('/:leaderId')
         (err) => next(err))
     .catch((err) => next(err));
 })
-.post(authenticate.verifyUser, (req, res, next) => {
+.post(auth.verifyUser, auth.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /leadertions/'
     + req.params.leaderId);
 })
-.put(authenticate.verifyUser, (req, res, next) => {
+.put(auth.verifyUser, auth.verifyAdmin, (req, res, next) => {
     Leaders.findByIdAndUpdate(req.params.leaderId,
         { $set: req.body }, 
         { new:true })
@@ -79,7 +79,7 @@ leaderRouter.route('/:leaderId')
         (err) => next(err))
     .catch((err) => next(err));
 })
-.delete(authenticate.verifyUser, (req, res, next) => {
+.delete(auth.verifyUser, auth.verifyAdmin, (req, res, next) => {
     Leaders.findByIdAndDelete(req.params.leaderId)
     .then(
         (resp) => res.json(resp),

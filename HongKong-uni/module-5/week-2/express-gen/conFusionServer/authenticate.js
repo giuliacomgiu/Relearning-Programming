@@ -42,10 +42,15 @@ exports.jwtPassport = passport.use(new JwtStrategy(opts,
 
 exports.verifyUser = passport.authenticate('jwt', {session: false});
 
-function verifyAdmin(auth, next) {
-    console.log(auth);
-    if(auth) { return next() };
-    return next(new Error('Unauthorized'));
+function verifyAdmin(req, res, next) {
+    
+    if(req.user.admin) { next() }
+    else 
+    { 
+        var err = new Error('Unauthorized');
+        err.status = 403;
+        return next(err);
+    };
 };
 
 exports.verifyAdmin = verifyAdmin;
