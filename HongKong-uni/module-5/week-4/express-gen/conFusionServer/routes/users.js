@@ -4,11 +4,16 @@ const bodyParser = require('body-parser');
 var User = require('../models/user');
 var passport = require('passport');
 var auth = require('../authenticate');
+const cors = require('./cors');
 
 router.use(bodyParser.json());
 
 /* GET users listing. */
-router.get('/', auth.verifyUser, auth.verifyAdmin, function(req, res, next) {
+router
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get('/', cors.corsWithOptions, auth.verifyUser, auth.verifyAdmin, 
+  function(req, res, next) 
+{
   User.find({})
   .then((users => {
     res.statusCode = 200;
@@ -20,7 +25,11 @@ router.get('/', auth.verifyUser, auth.verifyAdmin, function(req, res, next) {
 
 
 //SIGN UP
-router.post('/signup', (req, res, next) => {
+router
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.post('/signup', cors.corsWithOptions, 
+  (req, res, next) => 
+{
   User.register(new User({username: req.body.username}), 
     req.body.password, (err, user) => {
     if(err) {
@@ -50,7 +59,11 @@ router.post('/signup', (req, res, next) => {
   });
 });
 
-router.post('/login', passport.authenticate('local'), (req, res) => {
+router
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.post('/login', cors.corsWithOptions, passport.authenticate('local'), 
+  (req, res) => 
+{
 
   var token = auth.getToken({_id: req.user._id});
   res.statusCode = 200;
